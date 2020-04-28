@@ -28,10 +28,21 @@ target_compile_options(zboss-extensions INTERFACE
 # a given Zigbee role invisible.
 # Those options will be inherited by the ZBOSS target as well as everything
 # that links to it.
-if (CONFIG_ZIGBEE_ROLE_END_DEVICE)
+if (CONFIG_ZIGBEE_ROLE_COORDINATOR)
+  target_compile_definitions(zboss-extensions INTERFACE
+    ZB_COORDINATOR
+  )
+elseif (CONFIG_ZIGBEE_ROLE_ROUTER)
+  target_compile_definitions(zboss-extensions INTERFACE
+    ZB_ROUTER_ROLE
+  )
+elseif (CONFIG_ZIGBEE_ROLE_END_DEVICE)
   target_compile_definitions(zboss-extensions INTERFACE
     ZB_ED_ROLE
   )
+elseif (CONFIG_ZIGBEE_ROLE_MULTIROLE)
+else()
+  message( FATAL_ERROR "Unsupported Zigbee role. Exiting." )
 endif()
 
 
@@ -82,9 +93,15 @@ if ((NOT DEFINED CONFIG_ZBOSS_SOURCES_AVAILABLE) OR
 
   # Include the static library to the ZBOSS interface definition and select
   # ZBOSS configuration header file by defining compile-time definition.
-  if (CONFIG_ZIGBEE_ROLE_COORDINATOR OR CONFIG_ZIGBEE_ROLE_ROUTER)
+  if (CONFIG_ZIGBEE_ROLE_MULTIROLE)
     target_link_libraries(zboss INTERFACE ${ZBOSS_LIB_PATH}/libzboss.a)
     target_compile_definitions(zboss INTERFACE LIBZBOSS_CONFIG_FILE="libzboss_config.h")
+  elseif (CONFIG_ZIGBEE_ROLE_COORDINATOR)
+    target_link_libraries(zboss INTERFACE ${ZBOSS_LIB_PATH}/libzboss.zc.a)
+    target_compile_definitions(zboss INTERFACE LIBZBOSS_CONFIG_FILE="libzboss_config.zc.h")
+  elseif (CONFIG_ZIGBEE_ROLE_ROUTER)
+    target_link_libraries(zboss INTERFACE ${ZBOSS_LIB_PATH}/libzboss.zr.a)
+    target_compile_definitions(zboss INTERFACE LIBZBOSS_CONFIG_FILE="libzboss_config.zr.h")
   elseif (CONFIG_ZIGBEE_ROLE_END_DEVICE)
     target_link_libraries(zboss INTERFACE ${ZBOSS_LIB_PATH}/libzboss.ed.a)
     target_compile_definitions(zboss INTERFACE LIBZBOSS_CONFIG_FILE="libzboss_config.ed.h")
