@@ -21,6 +21,15 @@ config NRF_802154_SL
 		Use of Nordic Semiconductor proprietary implementation of nRF 802.15.4 Service Layer.
 		This implementation enables advanced features of nRF 802.15.4 Radio Driver.
 
+config NRF_802154_SL_SIMPLE
+	bool "Nordic proprietary nRF 802.15.4 Service Layer."
+	select MPSL
+	select ZERO_LATENCY_IRQS
+	select DYNAMIC_INTERRUPTS
+	help
+		Use of Nordic Semiconductor proprietary implementation of nRF 802.15.4 Service Layer.
+		This implementation enables MPSL and basic features of nRF 802.15.4 Radio Driver.
+
 endchoice # NRF_802154_SL_TYPE
 
 endif # NRF_802154_RADIO_DRIVER
